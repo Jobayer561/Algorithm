@@ -22,14 +22,14 @@ void merging(int a[], int b[], int low, int mid, int high)
         a[i] = b[i];
 }
 
-void sort(int a[], int b[], int low, int high)
+void Sort(int a[], int b[], int low, int high)
 {
     int mid;
     if (low < high)
     {
         mid = (low + high) / 2;
-        sort(a, b, low, mid);
-        sort(a, b, mid + 1, high);
+        Sort(a, b, low, mid);
+        Sort(a, b, mid + 1, high);
         merging(a, b, low, mid, high);
     }
 }
@@ -52,7 +52,7 @@ int main()
     for (int i = 0; i < n; i++)
         cout << a[i] << " ";
 
-    sort(a, b, 0, n - 1);
+    Sort(a, b, 0, n - 1);
 
     cout << "\nArray after sorting\n";
     for (int i = 0; i < n; i++)
