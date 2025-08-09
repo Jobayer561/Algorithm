@@ -1,0 +1,100 @@
+#include <bits/stdc++.h>
+using namespace std;
+struct pt
+{
+    int x, y;
+};
+pt pivot;
+int cross(pt A, pt B, pt C)
+{
+    return (B.x - A.x) * (C.y - A.y) - (B.y - A.y) * (C.x - A.x);
+}
+int dis(pt a, pt b)
+{
+    return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+}
+bool cmp(pt &p, pt &q)
+{
+    int orn = cross(pivot, p, q);
+    if(orn == 0)
+    {
+        int dis1 = dis(pivot, p);
+        int dis2 = dis(pivot, q);
+        return (dis1 < dis2);
+    }
+    return (orn > 0); // CCW / L
+}
+int main()
+{
+    int n;
+    cin >> n;
+
+    vector<pt> v(n);
+    for(int i=0; i<n; i++)
+    {
+        cin >> v[i].x >> v[i].y;
+    }
+
+    // Step-1: Pivot : O(n)
+    int mn_y = v[0].y;
+    for(int i = 0; i < n; i++)
+    {
+        mn_y = min(mn_y, v[i].y);
+    }
+
+    int mn_x = INT_MAX;
+    int idx = 0; // Fixed: initialize idx
+    for(int i=0; i<n; i++)
+    {
+        if(v[i].y == mn_y)
+        {
+            if(v[i].x < mn_x)
+            {
+                mn_x = v[i].x;
+                idx = i;
+            }
+        }
+    }
+    pivot = v[idx];
+    swap(v[0], v[idx]);
+    // Step-2: sort all pts w.r.t. pivot
+    sort(v.begin() + 1, v.end(), cmp); // O(nlogn)
+    // Step-3: Convex Hull - Stack
+    vector<pt> ans;
+    ans.push_back(v[0]);
+    ans.push_back(v[1]);
+    for(int i=2; i<n; i++)
+    {
+        int len = (int)ans.size();
+        while(len >= 2)
+        {
+            pt sec_last = ans[len - 2];
+            pt last = ans[len - 1];
+
+            pt cur = v[i];
+            int orn = cross(sec_last, last, cur);
+            if(orn <= 0) // CC / R
+            {
+                ans.pop_back();
+                len--;
+            }
+            else // CCC / L
+            {
+                break;
+            }
+        }
+        ans.push_back(v[i]);
+    }
+    int cnt = (int)ans.size();
+    if(cnt < 3)
+    {
+        cout << -1 << endl;
+        return 0;
+    }
+    cout << cnt << endl;
+    for(auto &p : ans)
+    {
+        cout << p.x << ' ' << p.y << endl;
+    }
+    return 0;
+}
